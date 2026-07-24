@@ -1,0 +1,102 @@
+const express = require('express');
+const { readDB, writeDB } = require('../services/db');
+const { requireAuth, requireRole } = require('../middleware/auth');
+
+const router = express.Router();
+
+// Статусы заказа: created -> awaiting_payment -> checking -> completed / cancelled
+// Выдача донатов ручная: после оплаты заказ просто уходит в "checking",
+// а админ сам выдаёт донат и подтверждает через /api/admin/orders/:id/complete
+
+function refundOrder(db, order) {
+  if (order.refunded) return;
+  const user = db.users.find(u => u.id === order.userId);
+  if (user) user.balance = (user.balance || 0) + order.price;
+  order.refunded = true;
+}
+
+// Создать заказ. Списывает деньги с баланса, если средств хватает, и ставит "на проверку".
+router.post('/', requireAuth, (req, res) => {
+  const { gameKey, packId, uid, server } = req.body;
+  const db = readDB();
+  const game = db.games.find(g => g.key === gameKey);
+  if (!game) return res.status(400).json({ error: 'Игра не найдена' });
+  const pack = game.packs.find(p => p.id === packId);
+  if (!pack) return res.status(400).json({ error: 'Пакет не найден' });
+  if (!uid) return res.status(400).json({ error: 'Укажите UID игрока' });
+  if (game.needsServer && !server) return res.status(400).json({ error: 'Укажите сервер' });
+
+  const user = db.users.find(u => u.id === req.user.id);
+  const order = {
+    id: 'MS-' + Math.floor(100000 + Math.random() * 900000),
+    userId: req.user.id,
+    gameKey, gameTitle: game.title,
+    packId, packLabel: pack.label, denom: pack.denom,
+    price: pack.price,
+    uid, server: server || null,
+    status: 'created',
+    refunded: false,
+    createdAt: new Date().toISOString()
+  };
+
+  if (user.balance >= pack.price) {
+    user.balance -= pack.price;
+    order.status = 'checking'; // деньги списаны — заказ ждёт ручной выдачи админом
+    db.orders.push(order);
+    writeDB(db);
+    return res.json(order);
+  }
+
+  order.status = 'awaiting_payment';
+  db.orders.push(order);
+  writeDB(db);
+  res.status(402).json({ error: 'Недостаточно средств на балансе, пополните баланс', order });
+});
+
+// Повторная попытка оплаты с баланса (например, после пополнения)
+router.post('/:id/pay-from-balance', requireAuth, (req, res) => {
+  const db = readDB();
+  const order = db.orders.find(o => o.id === req.params.id);
+  if (!order) return res.status(404).json({ error: 'Заказ не найден' });
+  if (order.userId !== req.user.id) return res.status(403).json({ error: 'Нет доступа' });
+  if (order.status !== 'awaiting_payment') return res.status(409).json({ error: 'Заказ уже оплачен или обработан' });
+
+  const user = db.users.find(u => u.id === req.user.id);
+  if (user.balance < order.price) {
+    return res.status(402).json({ error: 'Недостаточно средств на балансе' });
+  }
+  user.balance -= order.price;
+  order.status = 'checking';
+  writeDB(db);
+  res.json(order);
+});
+
+// Проверить статус заказа (просто отдаёт текущий статус — обновляется только вручную админом)
+router.get('/:id/status', requireAuth, (req, res) => {
+  const db = readDB();
+  const order = db.orders.find(o => o.id === req.params.id);
+  if (!order) return res.status(404).json({ error: 'Заказ не найден' });
+  if (order.userId !== req.user.id) return res.status(403).json({ error: 'Нет доступа' });
+  res.json(order);
+});
+
+// История заказов текущего пользователя
+router.get('/', requireAuth, (req, res) => {
+  const db = readDB();
+  const myOrders = db.orders.filter(o => o.userId === req.user.id).reverse();
+  res.json(myOrders);
+});
+
+// Отмена заказа пользователем, пока он ещё ожидает оплаты
+router.post('/:id/cancel', requireAuth, (req, res) => {
+  const db = readDB();
+  const order = db.orders.find(o => o.id === req.params.id);
+  if (!order) return res.status(404).json({ error: 'Заказ не найден' });
+  if (order.userId !== req.user.id) return res.status(403).json({ error: 'Нет доступа' });
+  if (order.status !== 'awaiting_payment') return res.status(409).json({ error: 'Можно отменить только неоплаченный заказ' });
+  order.status = 'cancelled';
+  writeDB(db);
+  res.json(order);
+});
+
+module.exports = router;

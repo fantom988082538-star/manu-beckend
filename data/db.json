@@ -1,0 +1,183 @@
+{
+  "users": [
+    {
+      "id": "523b1864-49a9-4efc-b18d-c9c44b134c58",
+      "name": "Manu (Super Admin)",
+      "phone": "+992075536886",
+      "passwordHash": "$2a$10$Xx508JDoTwIQqfv0fHQGbOu5M267jvNKH4qOJmNeQ9gBTonfHGg1G",
+      "role": "super_admin",
+      "balance": 0,
+      "createdAt": "2026-07-22T20:16:44.830Z"
+    },
+    {
+      "id": "48d83e2e-8aec-4792-a19d-d9e3a6d23dd7",
+      "name": "Manu",
+      "phone": "+992988082528",
+      "passwordHash": "$2a$10$E00wFboCUIVzQ46Ct/kARernAiLmPCz9VkVuY8urUbsX4VxMum1hG",
+      "role": "super_admin",
+      "balance": 2,
+      "createdAt": "2026-07-23T16:58:34.570Z"
+    }
+  ],
+  "orders": [
+    {
+      "id": "MS-359703",
+      "userId": "48d83e2e-8aec-4792-a19d-d9e3a6d23dd7",
+      "gameKey": "ff",
+      "gameTitle": "Free Fire",
+      "packId": "ff1",
+      "packLabel": "100 алмазов",
+      "denom": "100",
+      "price": 12,
+      "uid": "12345678",
+      "server": null,
+      "status": "completed",
+      "refunded": false,
+      "createdAt": "2026-07-23T17:01:28.192Z",
+      "completedBy": "523b1864-49a9-4efc-b18d-c9c44b134c58",
+      "completedAt": "2026-07-23T17:01:44.674Z"
+    },
+    {
+      "id": "MS-781608",
+      "userId": "48d83e2e-8aec-4792-a19d-d9e3a6d23dd7",
+      "gameKey": "ff",
+      "gameTitle": "Free Fire",
+      "packId": "ff1",
+      "packLabel": "100 алмазов",
+      "denom": "100",
+      "price": 12,
+      "uid": "12345678",
+      "server": null,
+      "status": "completed",
+      "refunded": false,
+      "createdAt": "2026-07-23T18:35:31.910Z",
+      "completedBy": "523b1864-49a9-4efc-b18d-c9c44b134c58",
+      "completedAt": "2026-07-23T18:35:59.973Z"
+    }
+  ],
+  "topups": [
+    {
+      "id": "1381f02c-da9a-47d1-9bca-067569b32189",
+      "userId": "48d83e2e-8aec-4792-a19d-d9e3a6d23dd7",
+      "amount": 10,
+      "receiptFile": "65f83c9d-5483-4435-809b-98535db41a4b.jpg",
+      "checksum": "6c6a581c1fd8b0ee1fc23c5f82d5535deb75864ed61096b2ee3cde499796e715",
+      "status": "approved",
+      "reviewedBy": "523b1864-49a9-4efc-b18d-c9c44b134c58",
+      "reviewedAt": "2026-07-23T16:59:50.667Z",
+      "rejectReason": null,
+      "createdAt": "2026-07-23T16:59:39.975Z"
+    },
+    {
+      "id": "fd4b08fb-0ebb-4ef1-a004-2d1f27b3973c",
+      "userId": "48d83e2e-8aec-4792-a19d-d9e3a6d23dd7",
+      "amount": 2,
+      "receiptFile": "0682086e-6633-4b01-9ab7-91ab54953983.jpg",
+      "checksum": "0692dec0301c0a5a38b9450eab601b3e868f5f7b3439704bfb7ba317e7bad03a",
+      "status": "approved",
+      "reviewedBy": "523b1864-49a9-4efc-b18d-c9c44b134c58",
+      "reviewedAt": "2026-07-23T17:01:02.139Z",
+      "rejectReason": null,
+      "createdAt": "2026-07-23T17:00:51.836Z"
+    },
+    {
+      "id": "aafe8e56-8267-499f-b002-1f3ffe1eb58d",
+      "userId": "48d83e2e-8aec-4792-a19d-d9e3a6d23dd7",
+      "amount": 14,
+      "receiptFile": "8bb22e82-6c1e-438f-8e46-6e722d1f4c3e.jpg",
+      "checksum": "dc710dd1319fde3343466fee4d988bf4e2fa76c8b4856c53d5456d5ff2fb7c97",
+      "status": "approved",
+      "reviewedBy": "523b1864-49a9-4efc-b18d-c9c44b134c58",
+      "reviewedAt": "2026-07-23T18:35:11.959Z",
+      "rejectReason": null,
+      "createdAt": "2026-07-23T18:34:43.084Z"
+    }
+  ],
+  "games": [
+    {
+      "key": "ff",
+      "title": "Free Fire",
+      "needsServer": false,
+      "supplierGameCode": "freefire",
+      "_note": "gamecode 'freefire' — ПРОВЕРИТЬ через GET /api/v.1/games, точное название могло отличаться у ALU",
+      "packs": [
+        {
+          "id": "ff1",
+          "label": "100 алмазов",
+          "price": 10.5,
+          "denom": "100"
+        },
+        {
+          "id": "ff2",
+          "label": "310 алмазов",
+          "price": 34,
+          "denom": "310"
+        },
+        {
+          "id": "ff3",
+          "label": "520 алмазов",
+          "price": 56,
+          "denom": "520"
+        },
+        {
+          "id": "ff4",
+          "label": "1080 алмазов",
+          "price": 108,
+          "denom": "1080"
+        }
+      ]
+    },
+    {
+      "key": "pubg",
+      "title": "PUBG Mobile",
+      "needsServer": false,
+      "supplierGameCode": "pubgm",
+      "packs": [
+        {
+          "id": "pm1",
+          "label": "60 UC",
+          "price": 15,
+          "denom": "60"
+        },
+        {
+          "id": "pm2",
+          "label": "325 UC",
+          "price": 70,
+          "denom": "325"
+        },
+        {
+          "id": "pm3",
+          "label": "660 UC",
+          "price": 135,
+          "denom": "660"
+        }
+      ]
+    },
+    {
+      "key": "mlbb",
+      "title": "Mobile Legends",
+      "needsServer": true,
+      "supplierGameCode": "mlbb",
+      "packs": [
+        {
+          "id": "ml1",
+          "label": "86 алмазов",
+          "price": 14,
+          "denom": "86"
+        },
+        {
+          "id": "ml2",
+          "label": "172 алмаза",
+          "price": 27,
+          "denom": "172"
+        },
+        {
+          "id": "ml3",
+          "label": "257 алмазов",
+          "price": 40,
+          "denom": "257"
+        }
+      ]
+    }
+  ]
+}
