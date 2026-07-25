@@ -1,6 +1,7 @@
 const express = require('express');
 const { readDB, writeDB } = require('../services/db');
 const { requireAuth, requireRole } = require('../middleware/auth');
+const { notifyAdmin } = require('../services/telegram');
 
 const router = express.Router();
 
@@ -44,6 +45,13 @@ router.post('/', requireAuth, (req, res) => {
     order.status = 'checking'; // деньги списаны — заказ ждёт ручной выдачи админом
     db.orders.push(order);
     writeDB(db);
+    notifyAdmin(
+      `🎮 <b>Новый заказ на выдачу</b>\n` +
+      `${order.gameTitle} — ${order.packLabel}\n` +
+      `UID: <b>${order.uid}</b>${order.server ? ' · сервер: ' + order.server : ''}\n` +
+      `Сумма: ${order.price} сомони\n` +
+      `Проверь в админ-панели: вкладка «Заказы»`
+    );
     return res.json(order);
   }
 
@@ -68,6 +76,13 @@ router.post('/:id/pay-from-balance', requireAuth, (req, res) => {
   user.balance -= order.price;
   order.status = 'checking';
   writeDB(db);
+  notifyAdmin(
+    `🎮 <b>Новый заказ на выдачу</b>\n` +
+    `${order.gameTitle} — ${order.packLabel}\n` +
+    `UID: <b>${order.uid}</b>${order.server ? ' · сервер: ' + order.server : ''}\n` +
+    `Сумма: ${order.price} сомони\n` +
+    `Проверь в админ-панели: вкладка «Заказы»`
+  );
   res.json(order);
 });
 
