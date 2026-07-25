@@ -58,15 +58,17 @@ router.get('/revenue', requireRole('super_admin', 'checker_admin'), (req, res) =
 
 // --- Доступно: только super_admin ---
 
-// Изменить цену пакета
+// Изменить пакет (цена, название, номинал)
 router.patch('/games/:key/packs/:packId', requireRole('super_admin'), (req, res) => {
-  const { price } = req.body;
+  const { price, label, denom } = req.body;
   const db = readDB();
   const game = db.games.find(g => g.key === req.params.key);
   if (!game) return res.status(404).json({ error: 'Игра не найдена' });
   const pack = game.packs.find(p => p.id === req.params.packId);
   if (!pack) return res.status(404).json({ error: 'Пакет не найден' });
-  pack.price = price;
+  if (price !== undefined) pack.price = Number(price);
+  if (label !== undefined) pack.label = label;
+  if (denom !== undefined) pack.denom = denom;
   writeDB(db);
   res.json(pack);
 });
@@ -108,6 +110,16 @@ router.post('/games', requireRole('super_admin'), (req, res) => {
   db.games.push(game);
   writeDB(db);
   res.json(game);
+});
+
+// Удалить игру целиком (со всеми её пакетами)
+router.delete('/games/:key', requireRole('super_admin'), (req, res) => {
+  const db = readDB();
+  const before = db.games.length;
+  db.games = db.games.filter(g => g.key !== req.params.key);
+  if (db.games.length === before) return res.status(404).json({ error: 'Игра не найдена' });
+  writeDB(db);
+  res.json({ ok: true });
 });
 
 // Список пользователей (без паролей)
