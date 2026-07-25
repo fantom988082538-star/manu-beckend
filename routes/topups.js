@@ -6,6 +6,7 @@ const path = require('path');
 const { v4: uuid } = require('uuid');
 const { readDB, writeDB } = require('../services/db');
 const { requireAuth, requireRole } = require('../middleware/auth');
+const { notifyAdmin } = require('../services/telegram');
 
 const router = express.Router();
 
@@ -54,6 +55,15 @@ router.post('/', requireAuth, upload.single('receipt'), (req, res) => {
   };
   db.topups.push(topup);
   writeDB(db);
+
+  const user = db.users.find(u => u.id === req.user.id);
+  notifyAdmin(
+    `💰 <b>Новая заявка на пополнение</b>\n` +
+    `Пользователь: ${user?.name || '—'} (${user?.phone || '—'})\n` +
+    `Сумма: <b>${amountNum} сомони</b>\n` +
+    `Проверь в админ-панели: вкладка «Пополнения»`
+  );
+
   res.json({ ...topup, receiptFile: undefined, checksum: undefined });
 });
 
